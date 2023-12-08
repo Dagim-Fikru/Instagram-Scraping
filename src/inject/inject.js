@@ -122,7 +122,7 @@ function goToNextPerson() {
 }
 function scrapeLikers() {
     setTimeout(() => {
-        const elems = document.querySelectorAll(".x9f619 > a");
+        const elems = document.querySelectorAll(".x9f619 > a > div > span > div");
         console.log(typeof elems);
         let sliced;
         if (elems.length >= 10) {
@@ -130,7 +130,6 @@ function scrapeLikers() {
         } else {
             sliced = Array.prototype.slice.call(elems);
         }
-
         // sliced.slice(0,9)
         console.log("elemes");
         console.log(sliced);

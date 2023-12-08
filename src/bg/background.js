@@ -11,11 +11,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.type === 'updateTab') {
     console.log('Background script received a message to update the tab.');
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-
       let newUsername = request.username
-
-      var newUrl = `https://www.instagram.com/${newUsername}?source=extension`
-      if (newUsername) {
+      let match = newUsername.match(/^(.*?)Verified/);
+      let cleanedText = match ? match[1] : newUsername;
+      var newUrl = `https://www.instagram.com/${cleanedText}?source=extension`
+      if (cleanedText) {
         chrome.tabs.update(tabs[0].id, { url: newUrl });
       }
     });
