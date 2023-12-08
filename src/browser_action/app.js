@@ -9,7 +9,9 @@ document.getElementById('automate-form').onsubmit = event => {
             console.error(chrome.runtime.lastError);
         } else {
             // Open the Instagram page
-            chrome.tabs.create({ url: `https://www.instagram.com/${userNamesArray[0]}?source=extension` });
+            chrome.tabs.create({ url: `${userNamesArray}liked_by?source=extension` });
         }
     });
 };
+
+// https://www.instagram.com/p/C0jxyeooWcO/liked_by/
