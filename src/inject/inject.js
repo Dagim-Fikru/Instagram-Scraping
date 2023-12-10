@@ -104,29 +104,51 @@ function waitForElementAndClick(selector) {
 
 function goToNextPerson() {
     setTimeout(() => {
-        chrome.storage.local.get(["usernames"], function (result) {
+        chrome.storage.local.get(["usernames", "total"], function (result) {
             const receivedUsernames = result.usernames;
+            const totals=result.total
             console.log("Received hashtag in inject.js:", receivedUsernames);
 
             if (receivedUsernames.length) {
                 console.log("usrname length :", receivedUsernames.length);
+                    
+                if ((totals-receivedUsernames.length+1) % 10 === 0) {
+                    
+                    setTimeout(() => {
+                        chrome.runtime.sendMessage({
+                            type: "updateTab",
+                            username: receivedUsernames.shift(),
+                        });
+                        chrome.storage.local.set({ usernames: receivedUsernames });
 
-                chrome.runtime.sendMessage({
-                    type: "updateTab",
-                    username: receivedUsernames.shift(),
-                });
-                chrome.storage.local.set({ usernames: receivedUsernames });
+                       
+                       
+                    }, 180000); 
+                } else {
+                   
+                    chrome.runtime.sendMessage({
+                        type: "updateTab",
+                        username: receivedUsernames.shift(),
+                    });
+                    chrome.storage.local.set({ usernames: receivedUsernames });
+
+                    
+                   
+                }
             }
         });
     }, 5000);
 }
+
+
+
 function scrapeLikers() {
     setTimeout(() => {
         const elems = document.querySelectorAll(".x9f619 > a > div > span > div");
         console.log(typeof elems);
         let sliced;
         if (elems.length >= 10) {
-            sliced = Array.prototype.slice.call(elems).slice(0, 10);
+            sliced = Array.prototype.slice.call(elems).slice(0, 100);
         } else {
             sliced = Array.prototype.slice.call(elems);
         }
@@ -137,6 +159,8 @@ function scrapeLikers() {
         // const username=elems[0].textContent
         console.log({ userNames });
         chrome.storage.local.set({ usernames: userNames });
+        chrome.storage.local.set({ total: userNames.length });
+        
         goToNextPerson();
     }, 5000);
 }
