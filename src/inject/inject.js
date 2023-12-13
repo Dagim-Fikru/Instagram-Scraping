@@ -3,23 +3,17 @@ chrome.extension.sendMessage({}, function (response) {
         if (document.readyState === "complete") {
             clearInterval(readyStateCheckInterval);
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('source') === 'extension') {
-                const url = window.location.href
-                if (url.includes('liked_by')) {
-                    scrapeLikers()
+            if (urlParams.get("source") === "extension") {
+                const url = window.location.href;
+                if (url.includes("liked_by")) {
+                    scrapeLikers();
                 } else {
-                    waitForElementAndClick('._aabd > a');
+                    waitForElementAndClick("._aabd > a");
                 }
-
-
-
             }
-
-
         }
     }, 10);
 });
-
 function waitForElementAndClick(selector) {
     var attempts = 0;
     var maxAttempts = 10;
@@ -106,49 +100,38 @@ function goToNextPerson() {
     setTimeout(() => {
         chrome.storage.local.get(["usernames", "total"], function (result) {
             const receivedUsernames = result.usernames;
-            const totals=result.total
+            const totals = result.total;
             console.log("Received hashtag in inject.js:", receivedUsernames);
 
             if (receivedUsernames.length) {
                 console.log("usrname length :", receivedUsernames.length);
-                    
-                if ((totals-receivedUsernames.length+1) % 10 === 0) {
-                    
+
+                if ((totals - receivedUsernames.length + 1) % 3 === 0) {
                     setTimeout(() => {
                         chrome.runtime.sendMessage({
                             type: "updateTab",
                             username: receivedUsernames.shift(),
                         });
                         chrome.storage.local.set({ usernames: receivedUsernames });
-
-                       
-                       
-                    }, 180000); 
+                    }, 5000);
                 } else {
-                   
                     chrome.runtime.sendMessage({
                         type: "updateTab",
                         username: receivedUsernames.shift(),
                     });
                     chrome.storage.local.set({ usernames: receivedUsernames });
-
-                    
-                   
                 }
             }
         });
     }, 5000);
 }
-
-
-
 function scrapeLikers() {
     setTimeout(() => {
         const elems = document.querySelectorAll(".x9f619 > a > div > span > div");
         console.log(typeof elems);
         let sliced;
         if (elems.length >= 10) {
-            sliced = Array.prototype.slice.call(elems).slice(0, 100);
+            sliced = Array.prototype.slice.call(elems).slice(0, 10);
         } else {
             sliced = Array.prototype.slice.call(elems);
         }
@@ -158,9 +141,9 @@ function scrapeLikers() {
         const userNames = sliced.map((elem) => elem.textContent);
         // const username=elems[0].textContent
         console.log({ userNames });
+        textContent;
         chrome.storage.local.set({ usernames: userNames });
         chrome.storage.local.set({ total: userNames.length });
-        
         goToNextPerson();
     }, 5000);
 }
