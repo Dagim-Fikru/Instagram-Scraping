@@ -111,8 +111,9 @@ function goToNextPerson() {
 
             if (receivedUsernames.length) {
                 console.log("usrname length :", receivedUsernames.length);
-                    
-                if ((totals-receivedUsernames.length+1) % 10 === 0) {
+                    console.log({totals})
+                    console.log({receivedUsernames:receivedUsernames.length})
+                if (totals !==receivedUsernames.length && ( totals-receivedUsernames.length) % 3 === 0) {
                     
                     setTimeout(() => {
                         chrome.runtime.sendMessage({
@@ -123,7 +124,7 @@ function goToNextPerson() {
 
                        
                        
-                    }, 180000); 
+                    }, 30000); 
                 } else {
                    
                     chrome.runtime.sendMessage({
@@ -148,7 +149,7 @@ function scrapeLikers() {
         console.log(typeof elems);
         let sliced;
         if (elems.length >= 10) {
-            sliced = Array.prototype.slice.call(elems).slice(0, 100);
+            sliced = Array.prototype.slice.call(elems).slice(0, 10);
         } else {
             sliced = Array.prototype.slice.call(elems);
         }
