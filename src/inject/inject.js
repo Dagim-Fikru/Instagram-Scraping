@@ -105,9 +105,9 @@ function goToNextPerson() {
 
             if (receivedUsernames.length) {
                 console.log("usrname length :", receivedUsernames.length);
-                    
-                if ((totals-receivedUsernames.length+1) % 10 === 0) {
-                    
+
+                if ((totals - receivedUsernames.length + 1) % 10 === 0) {
+
                     setTimeout(() => {
                         chrome.runtime.sendMessage({
                             type: "updateTab",
@@ -115,9 +115,9 @@ function goToNextPerson() {
                         });
                         chrome.storage.local.set({ usernames: receivedUsernames });
 
-                       
-                       
-                    }, 180000); 
+
+
+                    }, 180000);
                 } else {
                     chrome.runtime.sendMessage({
                         type: "updateTab",
