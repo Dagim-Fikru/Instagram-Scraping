@@ -105,15 +105,19 @@ function goToNextPerson() {
 
             if (receivedUsernames.length) {
                 console.log("usrname length :", receivedUsernames.length);
-
-                if ((totals - receivedUsernames.length + 1) % 3 === 0) {
+                    
+                if ((totals-receivedUsernames.length+1) % 10 === 0) {
+                    
                     setTimeout(() => {
                         chrome.runtime.sendMessage({
                             type: "updateTab",
                             username: receivedUsernames.shift(),
                         });
                         chrome.storage.local.set({ usernames: receivedUsernames });
-                    }, 5000);
+
+                       
+                       
+                    }, 180000); 
                 } else {
                     chrome.runtime.sendMessage({
                         type: "updateTab",
