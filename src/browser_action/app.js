@@ -13,5 +13,4 @@ document.getElementById('automate-form').onsubmit = event => {
         }
     });
 };
-
 // https://www.instagram.com/p/C0jxyeooWcO/liked_by/

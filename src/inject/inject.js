@@ -3,14 +3,17 @@ chrome.extension.sendMessage({}, function (response) {
         if (document.readyState === "complete") {
             clearInterval(readyStateCheckInterval);
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get("source") === "extension") {
-                const url = window.location.href;
-                if (url.includes("liked_by")) {
-                    scrapeLikers();
+            if (urlParams.get('source') === 'extension') {
+                const url = window.location.href
+                if (url.includes('liked_by')) {
+                    scrapeLikers()
                 } else {
-                    waitForElementAndClick("._aabd > a");
+                    waitForElementAndClick('._aabd > a');
                 }
+
+
             }
+
         }
     }, 10);
 });
@@ -41,6 +44,9 @@ function waitForElementAndClick(selector) {
                         counter++;
                         if (textContent === "Like") {
                             heart.click();
+                            chrome.storage.local.get(["actionCounter"], function (res) {
+                                chrome.storage.local.set({ actionCounter: ++res.actionCounter })
+                            })
                         } else if (counter < elements.length) {
                             const buttons = document.querySelectorAll(
                                 "body > div.x1n2onr6.xzkaem6 > div.x9f619.x1n2onr6.x1ja2u2z > div > div.x1uvtmcs.x4k7w5x.x1h91t0o.x1beo9mf.xaigb6o.x12ejxvf.x3igimt.xarpa2k.xedcshv.x1lytzrv.x1t2pt76.x7ja8zs.x1n2onr6.x1qrby5j.x1jfb8zj > div > div > div > div > div:nth-child(1) > div > div > div > button"
@@ -62,10 +68,11 @@ function waitForElementAndClick(selector) {
                     if (heart) {
                         if (textContent === "Like") {
                             heart.click();
+                            chrome.storage.local.get(["actionCounter"], function (res) {
+                                chrome.storage.local.set({ actionCounter: ++res.actionCounter })
+                            })
                             counter++;
-                        }
-
-                        if (counter < 3) {
+                        } if (counter < 3) {
                             const buttons = document.querySelectorAll(
                                 "body > div.x1n2onr6.xzkaem6 > div.x9f619.x1n2onr6.x1ja2u2z > div > div.x1uvtmcs.x4k7w5x.x1h91t0o.x1beo9mf.xaigb6o.x12ejxvf.x3igimt.xarpa2k.xedcshv.x1lytzrv.x1t2pt76.x7ja8zs.x1n2onr6.x1qrby5j.x1jfb8zj > div > div > div > div > div:nth-child(1) > div > div > div > button"
                             );
@@ -95,47 +102,62 @@ function waitForElementAndClick(selector) {
 
     attemptClick();
 }
-
 function goToNextPerson() {
     setTimeout(() => {
         chrome.storage.local.get(["usernames", "total"], function (result) {
             const receivedUsernames = result.usernames;
-            const totals = result.total;
+            const totals = result.total
             console.log("Received hashtag in inject.js:", receivedUsernames);
+            console.log("usrname length :", receivedUsernames.length);
+            if (totals === receivedUsernames.length) {
+                chrome.storage.local.set({ startTime: (new Date()).toLocaleTimeString().split(' ')[0] });
+                chrome.storage.local.set({ actionCounter: 0 });
+
+            }
+            if (receivedUsernames.length === 0) {
+                chrome.storage.local.set({ endTime: (new Date()).toLocaleTimeString().split(' ')[0] });
+
+                chrome.storage.local.get(["startTime", "endTime", "actionCounter"], function (res) {
+                    // alert(res.startTime.getHours())
+                    const alertDis = {}
+                    alert(`startTime: ${ res.startTime } \nendTime: ${ res.endTime }\nliked Posts ${ res.actionCounter }`)
+                    console.log({ startTime: res.startTime })
+                    console.log({ endTime: res.endTime })
+
+
+                })
+            }
 
             if (receivedUsernames.length) {
-                console.log("usrname length :", receivedUsernames.length);
 
-                if ((totals - receivedUsernames.length + 1) % 10 === 0) {
-
+                if (totals !== receivedUsernames.length && (totals - receivedUsernames.length) % 10 === 0) {
+                    // alert('Now wait for 30 seconds to go to next person')
                     setTimeout(() => {
                         chrome.runtime.sendMessage({
                             type: "updateTab",
                             username: receivedUsernames.shift(),
                         });
                         chrome.storage.local.set({ usernames: receivedUsernames });
-
-
-
                     }, 180000);
                 } else {
+
                     chrome.runtime.sendMessage({
                         type: "updateTab",
                         username: receivedUsernames.shift(),
                     });
                     chrome.storage.local.set({ usernames: receivedUsernames });
+
                 }
             }
         });
     }, 5000);
-}
-function scrapeLikers() {
+} function scrapeLikers() {
     setTimeout(() => {
         const elems = document.querySelectorAll(".x9f619 > a > div > span > div");
         console.log(typeof elems);
         let sliced;
-        if (elems.length >= 10) {
-            sliced = Array.prototype.slice.call(elems).slice(0, 10);
+        if (elems.length >= 100) {
+            sliced = Array.prototype.slice.call(elems).slice(0, 100);
         } else {
             sliced = Array.prototype.slice.call(elems);
         }
@@ -145,9 +167,9 @@ function scrapeLikers() {
         const userNames = sliced.map((elem) => elem.textContent);
         // const username=elems[0].textContent
         console.log({ userNames });
-        textContent;
         chrome.storage.local.set({ usernames: userNames });
         chrome.storage.local.set({ total: userNames.length });
+
         goToNextPerson();
     }, 5000);
 }
