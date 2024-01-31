@@ -131,14 +131,14 @@ function goToNextPerson() {
             if (receivedUsernames.length) {
 
                 if (totals !== receivedUsernames.length && (totals - receivedUsernames.length) % 10 === 0) {
-                    // alert('Now wait for 30 seconds to go to next person')
+                    alert('Now wait for 30 seconds to go to next person')
                     setTimeout(() => {
                         chrome.runtime.sendMessage({
                             type: "updateTab",
                             username: receivedUsernames.shift(),
                         });
                         chrome.storage.local.set({ usernames: receivedUsernames });
-                    }, 180000);
+                    }, 30000);
                 } else {
 
                     chrome.runtime.sendMessage({
@@ -153,7 +153,7 @@ function goToNextPerson() {
     }, 5000);
 } function scrapeLikers() {
     setTimeout(() => {
-        const elems = document.querySelectorAll(".x9f619 > a > div > span > div");
+        const elems = document.querySelectorAll(".x1rg5ohu > div > a");
         console.log(typeof elems);
         let sliced;
         if (elems.length >= 100) {
