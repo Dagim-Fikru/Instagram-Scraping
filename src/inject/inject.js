@@ -131,7 +131,7 @@ function goToNextPerson() {
             if (receivedUsernames.length) {
 
                 if (totals !== receivedUsernames.length && (totals - receivedUsernames.length) % 10 === 0) {
-                    alert('Now wait for 30 seconds to go to next person')
+                    // alert('Now wait for 30 seconds to go to next person')
                     setTimeout(() => {
                         chrome.runtime.sendMessage({
                             type: "updateTab",
